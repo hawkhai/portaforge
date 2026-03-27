@@ -8,7 +8,14 @@ if __name__ == "__main__":
     print(args.app, args.icon, args.mcp)
     
     # 首先制作打包数据
-    gen_pack(args.app, entry=args.entry)
+    mainexe = gen_pack(args.app, entry=args.entry)
+
+    isgui = is_gui_exe(mainexe)
+    build_exe(args.app, getPlatform(), isgui=isgui)
+    cmdx = get_icon_cmd(args.app+r".exe", args.icon, args.mcp)
+    print("***" * 30)
+    print(cmdx)
+    os.system(cmdx)
 
     print("ok")
 

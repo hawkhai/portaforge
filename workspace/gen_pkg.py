@@ -40,7 +40,7 @@ def is_gui_exe(fpath):
 def is_console_exe(fpath):
     return get_pe_subsystem(fpath) == IMAGE_SUBSYSTEM_WINDOWS_CUI
 
-def build_exe(keydir, winp=""):
+def build_exe(keydir, winp="", isgui=False):
     subdir = keydir
     if forTONG: # 文件检查（跳过）
         pass # assert not winp, winp
@@ -52,12 +52,12 @@ def build_exe(keydir, winp=""):
         return False
 
     rclist = readfileLines(rcfile)
-    loader2019 = "loader2\\kinstaller.exe"
-    if forTONG:
-        loader2019 = "loader2\\winstaller.exe"
+    loader2019 = "launcher\\x86\\cinstaller.exe"
+    if isgui:
+        loader2019 = "launcher\\x86\\ginstaller.exe"
 
     targetfile = keydir + ".exe"
-    ResourceHacker = getFileTool("ResourceHacker.exe")
+    ResourceHacker = "tools\\ResourceHacker.exe"
     osremove(targetfile)
 
     script = r"""

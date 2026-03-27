@@ -153,6 +153,7 @@ ImportError: DLL load failed while importing win32api: 找不到指定的模块�
         lirc.append(line)
     fdata = "\r\n".join(lirc)
     writefile(subdir+".rc", fdata)
+    return mainexe
 
 def scan_checksums(keydir, winp=""):
     subdir = keydir
