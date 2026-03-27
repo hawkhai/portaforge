@@ -77,13 +77,13 @@ Log=logfile.txt
 -addoverwrite {}, RCData,{},1033""".format(PATH, KEY)
         script += cmdx
 
-    scriptfile = "{}.script.txt".format(subdir)
+    scriptfile = "{}.script.txt".format(subdir.replace('/', '_').replace('\\', '_'))
     script = script.replace("\r\n", "\n").replace("\n", "\r\n")
     script = script.strip() + "\r\n"
     writefile(scriptfile, script)
     cmdx = r"""{} -script {}""".format(ResourceHacker, scriptfile)
-    print(cmdx)
-    os.system(cmdx)
+    code = os.system(cmdx)
+    print(code, cmdx)
     osremove(scriptfile)
     osremove("logfile.txt")
     return True
