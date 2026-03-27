@@ -3,11 +3,11 @@ import os, sys, re
 if not os.getcwd() in sys.path: # fix linux 软连接的 bug
     sys.path.append(os.getcwd())
 
+import argparse
+
 from pythonx.funclib import *
 from pythonx.pelib import *
 from pythonx.mytoolspub import *
-import argparse
-mydll = getMyDll()
 
 forTONG = "forTONG" in sys.argv
 

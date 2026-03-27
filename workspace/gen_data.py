@@ -3,12 +3,12 @@ import os, sys, re
 if not os.getcwd() in sys.path: # fix linux 软连接的 bug
     sys.path.append(os.getcwd())
 
+import time
+
 from pythonx.funclib import *
 from pythonx.pelib import *
 from pythonx.mytoolspub import *
 from pythonx.filetool.pyinstxtractor import *
-mydll = getMyDll()
-import time
 
 forTONG = "forTONG" in sys.argv
 
