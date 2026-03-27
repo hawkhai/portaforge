@@ -11,7 +11,7 @@ mydll = getMyDll()
 
 forTONG = "forTONG" in sys.argv
 
-def mainGenExe(keydir, winp=""):
+def build_exe(keydir, winp=""):
     subdir = keydir
     if forTONG: # 文件检查（跳过）
         pass # assert not winp, winp
@@ -61,7 +61,7 @@ Log=logfile.txt
 
 # exename:
 # iconname: ..\image\icon\
-def getRepIconCmdx(exename, iconname, mcp=False):
+def get_icon_cmd(exename, iconname, mcp=False):
     cmdx = r"..\..\dist\pecopy.exe -in {} -out ..\..\dist\{} -icon ..\image\icon\{} -mask {}".format(
         exename, exename, iconname, r"ICONGROUP,MAINICON,0;ICONGROUP,107,2052;ICONGROUP,108,2052")
 
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     print(args.app, args.icon, args.mcp)
 
     if "pecopy" in sys.argv:
-        mainGenExe("pecopy", getPlatform())
+        build_exe("pecopy", getPlatform())
         # -mcp 65001 -- win10x64 不需要这玩意。
         cmdx = r"pecopy.exe -mcp 65001 -in pecopy.exe -out ..\..\dist\pecopy.exe -icon ..\image\icon\iconall\shitou.ico -mask ICONGROUP,MAINICON,0;ICONGROUP,107,2052;ICONGROUP,108,2052"
         print("***" * 30)
@@ -99,15 +99,15 @@ if __name__ == "__main__":
         os.system(cmdx)
 
     elif "test" in sys.argv:
-        mainGenExe("test", getPlatform())
+        build_exe("test", getPlatform())
         cmdx = r"test\test.exe -in test.exe -out test2.exe -mcp 65001 -debug 1"
         print("***" * 30)
         print(cmdx)
         os.system(cmdx)
 
     else:
-        mainGenExe(args.app, getPlatform())
-        cmdx = getRepIconCmdx(args.app+r".exe", args.icon, args.mcp)
+        build_exe(args.app, getPlatform())
+        cmdx = get_icon_cmd(args.app+r".exe", args.icon, args.mcp)
         print("***" * 30)
         print(cmdx)
         os.system(cmdx)
