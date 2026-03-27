@@ -138,10 +138,14 @@ ImportError: DLL load failed while importing win32api: 找不到指定的模块�
         "files": pack,
         "version": version,
         "sysversion": sysversion,
-        "genrestime": genrestime,
+        "genrestime": 0,
         "petype": getPeType(mainexe),
     }
+    
     writefileJson(subdir+".json", writepack)
+    writepack["genrestime"] = int(getFileMd5(subdir+".json")[:7], 16)
+    writefileJson(subdir+".json", writepack)
+    
     # PECOPY RCDATA "pecopy/pecopy.exe"
     keys = [key for key in pack.keys()]
     keys.sort()
