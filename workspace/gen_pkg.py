@@ -11,8 +11,6 @@ from pythonx.pelib import *
 from pythonx.mytoolspub import *
 #from common import *
 
-forTONG = "forTONG" in sys.argv
-
 _DOS_SIGNATURE         = b'MZ'
 _PE_SIGNATURE          = b'PE\x00\x00'
 _DOS_PE_OFFSET         = 0x3C   # offset of PE header pointer in DOS stub
@@ -42,7 +40,7 @@ def is_console_exe(fpath):
 
 def build_exe(keydir, winp="", isgui=False):
     subdir = keydir
-    if forTONG: # 文件检查（跳过）
+    if True: # 文件检查（跳过）
         pass # assert not winp, winp
     elif winp:
         subdir = keydir + "_" + winp
@@ -90,7 +88,7 @@ Log=logfile.txt
 
 # exename:
 # iconname: ..\image\icon\
-def get_icon_cmd(exename, iconname, mcp=False):
+def get_icon_cmd(exename, iconname, mcp=False, isgui=False):
     cmdx = r"..\..\dist\pecopy.exe -in {} -out ..\..\dist\{} -icon ..\image\icon\{} -mask {}".format(
         exename, exename, iconname, r"ICONGROUP,MAINICON,0;ICONGROUP,107,2052;ICONGROUP,108,2052")
 
@@ -98,7 +96,7 @@ def get_icon_cmd(exename, iconname, mcp=False):
         cmdx = r"python3 F:\pythonx\pecopy.py -in {} -out ..\..\dist\{} -icon ..\image\icon\{} -mask {}".format(
             exename, exename, iconname, r"ICONGROUP,MAINICON,0;ICONGROUP,107,2052;ICONGROUP,108,2052")
 
-    if forTONG: # 设置为 GUI
+    if isgui: # 设置为 GUI
         cmdx += " -gui 1"
 
     if mcp:

@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     isgui = is_gui_exe(mainexe)
     build_exe(args.app, getPlatform(), isgui=isgui)
-    cmdx = get_icon_cmd(args.app+r".exe", args.icon, args.mcp)
+    cmdx = get_icon_cmd(args.app+r".exe", args.icon, args.mcp, isgui=isgui)
     print("***" * 30)
     print(cmdx)
     os.system(cmdx)
