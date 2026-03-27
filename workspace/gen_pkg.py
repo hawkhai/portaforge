@@ -109,6 +109,7 @@ def parse_args():
     parser.add_argument('--app', type=str, default='', help='app name', required=True)
     parser.add_argument('--icon', type=str, default='', help='icon file', required=True)
     parser.add_argument('--mcp', type=bool, default=False, help='mcp code')
+    parser.add_argument('--entry', type=str, default='', help='entry exe name (without .exe)')
     args = parser.parse_args()
     return args
 

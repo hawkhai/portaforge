@@ -38,7 +38,7 @@ def get_file_time(fpath):
     return formatTimeStamp(datestr)
 
 # PECOPY RCDATA "pecopy/pecopy.exe"
-def gen_pack(keydir, winp=""):
+def gen_pack(keydir, winp="", entry=""):
     pack = {}
 
     subdir = keydir
@@ -49,10 +49,18 @@ def gen_pack(keydir, winp=""):
     if os.path.exists(baselibrary):
         rezipfile(baselibrary, ktouch=True)
 
-    if forTONG: # 主程序
-        keydir = "forTONG_relv5"
+    if entry:
+        exename = entry
+    else:
+        exes = [f for f in os.listdir(subdir) if f.lower().endswith(".exe")]
+        if len(exes) == 1:
+            exename = exes[0][:-4]
+        else:
+            raise AssertionError(
+                "entry exe is ambiguous, specify via entry= param (found: {})".format(exes)
+            )
 
-    mainexe = "{}\\{}.exe".format(subdir, keydir)
+    mainexe = "{}\\{}.exe".format(subdir, exename)
     assert os.path.exists(mainexe), mainexe
     # 存在 bug，如果覆盖安装，文件更新了，又只判断了在不在，就必须这里修改一下。
     # 比如 msgbox 的 py 落地文件。
@@ -119,7 +127,7 @@ ImportError: DLL load failed while importing win32api: 找不到指定的模块�
     searchdir(rootdir, process_file)
 
     # 入口函数。
-    zloader = "{}\\{}\\{}.exe".format(subdir, version, keydir.lower())
+    zloader = "{}\\{}\\{}.exe".format(subdir, version, exename.lower())
     if not zloader in runfileset:
         for x in runfileset:
             print(x)
@@ -178,7 +186,7 @@ if __name__ == "__main__":
         gen_pack("test")
 
     if forTONG: # 文件夹
-        gen_pack("forTONG")
+        gen_pack("forTONG", entry="forTONG_relv5")
 
     for arg in sys.argv:
         if check_extracted(arg, getPlatform()):

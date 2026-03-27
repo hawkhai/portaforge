@@ -8,7 +8,7 @@ if __name__ == "__main__":
     print(args.app, args.icon, args.mcp)
     
     # 首先制作打包数据
-    gen_pack(args.app)
+    gen_pack(args.app, entry=args.entry)
 
     print("ok")
 
