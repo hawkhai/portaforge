@@ -6,9 +6,9 @@ if not os.getcwd() in sys.path: # fix linux 软连接的 bug
 import argparse
 import struct
 
-from pythonx.funclib import *
-from pythonx.pelib import *
-from pythonx.mytoolspub import *
+#from pythonx.funclib import *
+#from pythonx.pelib import *
+#from pythonx.mytoolspub import *
 
 forTONG = "forTONG" in sys.argv
 

@@ -2,7 +2,7 @@
 from gen_data import *
 from gen_pkg import *
 
-
+# python3 portaforge.py --app forTONG --icon juice.ico
 if __name__ == "__main__":
     args = parse_args()
     print(args.app, args.icon, args.mcp)
