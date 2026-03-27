@@ -38,7 +38,7 @@ def is_gui_exe(fpath):
 def is_console_exe(fpath):
     return get_pe_subsystem(fpath) == IMAGE_SUBSYSTEM_WINDOWS_CUI
 
-def build_exe(keydir, winp="", isgui=False):
+def build_exe(keydir, winp="", isgui=False, mainexe=""):
     subdir = keydir
     if True: # 文件检查（跳过）
         pass # assert not winp, winp
@@ -64,7 +64,9 @@ Exe={}
 SaveAs={}
 Log=logfile.txt
 
-[COMMANDS]""".format(loader2019, targetfile)
+[COMMANDS]""".format(
+        os.path.abspath(loader2019),
+        targetfile)
     for line in rclist:
         line = line.strip()
         if not line: continue
@@ -89,15 +91,11 @@ Log=logfile.txt
 # exename:
 # iconname: ..\image\icon\
 def get_icon_cmd(exename, iconname, mcp=False, isgui=False):
-    cmdx = r"..\..\dist\pecopy.exe -in {} -out ..\..\dist\{} -icon ..\image\icon\{} -mask {}".format(
+    cmdx = r"tools\\pecopy.exe -in {} -out dist\{} -icon {} -mask {}".format(
         exename, exename, iconname, r"ICONGROUP,MAINICON,0;ICONGROUP,107,2052;ICONGROUP,108,2052")
 
-    if os.path.exists(r"F:\pythonx\pecopy.py"):
-        cmdx = r"python3 F:\pythonx\pecopy.py -in {} -out ..\..\dist\{} -icon ..\image\icon\{} -mask {}".format(
-            exename, exename, iconname, r"ICONGROUP,MAINICON,0;ICONGROUP,107,2052;ICONGROUP,108,2052")
-
-    if isgui: # 设置为 GUI
-        cmdx += " -gui 1"
+    #if isgui: # 设置为 GUI
+    #    cmdx += " -gui 1"
 
     if mcp:
         cmdx += " -mcp 65001"

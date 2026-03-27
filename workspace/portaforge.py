@@ -11,7 +11,7 @@ if __name__ == "__main__":
     mainexe = gen_pack(args.app, entry=args.entry)
 
     isgui = is_gui_exe(mainexe)
-    build_exe(args.app, getPlatform(), isgui=isgui)
+    build_exe(args.app, getPlatform(), isgui=isgui, mainexe=mainexe)
     cmdx = get_icon_cmd(args.app+r".exe", args.icon, args.mcp, isgui=isgui)
     print("***" * 30)
     print(cmdx)
