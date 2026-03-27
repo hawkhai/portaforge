@@ -4,12 +4,40 @@ if not os.getcwd() in sys.path: # fix linux 软连接的 bug
     sys.path.append(os.getcwd())
 
 import argparse
+import struct
 
 from pythonx.funclib import *
 from pythonx.pelib import *
 from pythonx.mytoolspub import *
 
 forTONG = "forTONG" in sys.argv
+
+_DOS_SIGNATURE         = b'MZ'
+_PE_SIGNATURE          = b'PE\x00\x00'
+_DOS_PE_OFFSET         = 0x3C   # offset of PE header pointer in DOS stub
+_PE_OPT_HDR_OFFSET     = 24     # PE signature(4) + File Header(20)
+_OPT_HDR_SUBSYS_OFFSET = 68     # offset of Subsystem field within Optional Header
+
+IMAGE_SUBSYSTEM_WINDOWS_GUI = 2  # windowed application
+IMAGE_SUBSYSTEM_WINDOWS_CUI = 3  # console application
+
+def get_pe_subsystem(fpath):
+    with open(fpath, 'rb') as f:
+        if f.read(2) != _DOS_SIGNATURE:
+            raise ValueError("not a valid PE file (missing MZ): {}".format(fpath))
+        f.seek(_DOS_PE_OFFSET)
+        pe_offset = struct.unpack('<I', f.read(4))[0]
+        f.seek(pe_offset)
+        if f.read(4) != _PE_SIGNATURE:
+            raise ValueError("not a valid PE file (missing PE\\0\\0): {}".format(fpath))
+        f.seek(pe_offset + _PE_OPT_HDR_OFFSET + _OPT_HDR_SUBSYS_OFFSET)
+        return struct.unpack('<H', f.read(2))[0]
+
+def is_gui_exe(fpath):
+    return get_pe_subsystem(fpath) == IMAGE_SUBSYSTEM_WINDOWS_GUI
+
+def is_console_exe(fpath):
+    return get_pe_subsystem(fpath) == IMAGE_SUBSYSTEM_WINDOWS_CUI
 
 def build_exe(keydir, winp=""):
     subdir = keydir
