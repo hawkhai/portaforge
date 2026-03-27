@@ -9,6 +9,7 @@ import struct
 #from pythonx.funclib import *
 #from pythonx.pelib import *
 #from pythonx.mytoolspub import *
+from common import *
 
 forTONG = "forTONG" in sys.argv
 

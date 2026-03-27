@@ -9,6 +9,7 @@ import time
 #from pythonx.pelib import *
 #from pythonx.mytoolspub import *
 #from pythonx.filetool.pyinstxtractor import *
+from common import *
 
 forTONG = "forTONG" in sys.argv
 
