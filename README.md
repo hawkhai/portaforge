@@ -12,8 +12,8 @@ A launcher stub is used as the host executable. All loose files are compressed a
 
 ## 使用指南 / Quick Start
 
-1. 把散文件整理到一个目录
-2. 运行 portaforge.exe，指定应用目录和图标
+1. 把散文件整理到一个目录。
+2. 运行 portaforge.exe，指定应用目录和图标。
 
 1. Organize all loose files into a single directory.
 2. Run `portaforge.exe` with the application directory and icon path.
