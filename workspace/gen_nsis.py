@@ -121,6 +121,9 @@ def gen_nsis_script(app, icon, entry="", outdir="dist", nsis=DEFAULT_NSIS,
 !define MUI_ICON "{}"
 !define MUI_UNICON "{}"'''.format(_nsis_quote(icon_abs), _nsis_quote(icon_abs))
 
+    old_uninstall_shortcut = "卸载.lnk"
+    uninstall_shortcut = "卸载 {}.lnk".format(app_name)
+
     script = r'''
 Unicode True
 ManifestDPIAware True
@@ -182,8 +185,9 @@ Section "安装"
 
   CreateDirectory "$SMPROGRAMS\${{APP_NAME}}"
   CreateDirectory "$DESKTOP"
+  Delete "$SMPROGRAMS\${{APP_NAME}}\{old_uninstall_shortcut}"
   CreateShortcut "$SMPROGRAMS\${{APP_NAME}}\${{APP_NAME}}.lnk" "$INSTDIR\${{APP_EXE}}"
-  CreateShortcut "$SMPROGRAMS\${{APP_NAME}}\卸载.lnk" "$INSTDIR\Uninstall.exe"
+  CreateShortcut "$SMPROGRAMS\${{APP_NAME}}\{uninstall_shortcut}" "$INSTDIR\Uninstall.exe"
   CreateShortcut "$DESKTOP\${{APP_NAME}}.lnk" "$INSTDIR\${{APP_EXE}}"
 SectionEnd
 
@@ -204,6 +208,8 @@ SectionEnd
         vi_version=vi_version,
         icon_lines=icon_lines,
         language=_nsis_quote(language),
+        old_uninstall_shortcut=_nsis_quote(old_uninstall_shortcut),
+        uninstall_shortcut=_nsis_quote(uninstall_shortcut),
         estimated_size=estimated_size,
         outfile=_nsis_quote(outfile),
         app_dir=_nsis_quote(app_dir),
