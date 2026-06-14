@@ -6,6 +6,7 @@ from gen_manifest import update_manifest
 
 
 DEFAULT_NSIS = r"C:\Program Files (x86)\NSIS\NSIS.exe"
+DEFAULT_WEBSITE = "https://wordtap.cn"
 
 
 def _nsis_quote(text):
@@ -29,8 +30,7 @@ def _find_makensis(nsis_path=DEFAULT_NSIS):
 
     for candidate in candidates:
         if candidate.endswith(".exe") and os.path.exists(candidate):
-            name = os.path.basename(candidate).lower()
-            if name == "makensis.exe":
+            if os.path.basename(candidate).lower() == "makensis.exe":
                 return candidate
     return "makensis.exe"
 
@@ -67,9 +67,21 @@ def _dir_size_kb(path):
     return max(1, total // 1024)
 
 
+def _vi_product_version(version):
+    parts = []
+    for part in str(version).split("."):
+        try:
+            parts.append(str(max(0, min(65535, int(part)))))
+        except ValueError:
+            parts.append("0")
+    while len(parts) < 4:
+        parts.append("0")
+    return ".".join(parts[:4])
+
+
 def gen_nsis_script(app, icon, entry="", outdir="dist", nsis=DEFAULT_NSIS,
                     app_name="", publisher="", version="", msi=False,
-                    language="SimpChinese"):
+                    language="SimpChinese", website=DEFAULT_WEBSITE):
     if msi:
         raise AssertionError(
             "NSIS cannot build a real MSI directly. Use the NSIS .exe installer, "
@@ -84,6 +96,7 @@ def gen_nsis_script(app, icon, entry="", outdir="dist", nsis=DEFAULT_NSIS,
     app_name = app_name or os.path.basename(os.path.normpath(app))
     publisher = publisher or app_name
     version = version or _app_version(app_dir)
+    vi_version = _vi_product_version(version)
     estimated_size = _dir_size_kb(app_dir)
     outdir = os.path.abspath(outdir)
     if not os.path.isdir(outdir):
@@ -121,7 +134,19 @@ RequestExecutionLevel user
 !define APP_VERSION "{version}"
 !define APP_PUBLISHER "{publisher}"
 !define APP_EXE "{entry_exe}"
+!define APP_WEBSITE "{website}"
 {icon_lines}
+
+VIProductVersion "{vi_version}"
+VIAddVersionKey "ProductName" "${{APP_NAME}}"
+VIAddVersionKey "ProductVersion" "${{APP_VERSION}}"
+VIAddVersionKey "CompanyName" "${{APP_PUBLISHER}}"
+VIAddVersionKey "FileDescription" "${{APP_NAME}} Installer"
+VIAddVersionKey "FileVersion" "${{APP_VERSION}}"
+VIAddVersionKey "InternalName" "${{APP_NAME}} Setup"
+VIAddVersionKey "OriginalFilename" "${{APP_NAME}}-Setup.exe"
+VIAddVersionKey "Comments" "${{APP_WEBSITE}}"
+VIAddVersionKey "LegalCopyright" "${{APP_WEBSITE}}"
 
 Name "${{APP_NAME}}"
 OutFile "{outfile}"
@@ -137,6 +162,7 @@ InstallDirRegKey HKCU "{app_reg_key}" "InstallDir"
 !insertmacro MUI_LANGUAGE "{language}"
 
 Section "安装"
+  SetShellVarContext current
   SetOutPath "$INSTDIR"
   File /r "{app_dir}\*.*"
 
@@ -145,6 +171,7 @@ Section "安装"
   WriteRegStr HKCU "{uninstall_key}" "DisplayName" "${{APP_NAME}}"
   WriteRegStr HKCU "{uninstall_key}" "DisplayVersion" "${{APP_VERSION}}"
   WriteRegStr HKCU "{uninstall_key}" "Publisher" "${{APP_PUBLISHER}}"
+  WriteRegStr HKCU "{uninstall_key}" "URLInfoAbout" "${{APP_WEBSITE}}"
   WriteRegStr HKCU "{uninstall_key}" "InstallLocation" "$INSTDIR"
   WriteRegStr HKCU "{uninstall_key}" "DisplayIcon" "$INSTDIR\${{APP_EXE}}"
   WriteRegStr HKCU "{uninstall_key}" "UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
@@ -154,12 +181,14 @@ Section "安装"
   WriteRegDWORD HKCU "{uninstall_key}" "NoRepair" 1
 
   CreateDirectory "$SMPROGRAMS\${{APP_NAME}}"
+  CreateDirectory "$DESKTOP"
   CreateShortcut "$SMPROGRAMS\${{APP_NAME}}\${{APP_NAME}}.lnk" "$INSTDIR\${{APP_EXE}}"
   CreateShortcut "$SMPROGRAMS\${{APP_NAME}}\卸载.lnk" "$INSTDIR\Uninstall.exe"
   CreateShortcut "$DESKTOP\${{APP_NAME}}.lnk" "$INSTDIR\${{APP_EXE}}"
 SectionEnd
 
-Section "卸载"
+Section "Uninstall"
+  SetShellVarContext current
   Delete "$DESKTOP\${{APP_NAME}}.lnk"
   RMDir /r "$SMPROGRAMS\${{APP_NAME}}"
   DeleteRegKey HKCU "{uninstall_key}"
@@ -171,6 +200,8 @@ SectionEnd
         version=_nsis_quote(version),
         publisher=_nsis_quote(publisher),
         entry_exe=_nsis_quote(entry_exe),
+        website=_nsis_quote(website),
+        vi_version=vi_version,
         icon_lines=icon_lines,
         language=_nsis_quote(language),
         estimated_size=estimated_size,
@@ -181,19 +212,19 @@ SectionEnd
     ).strip() + "\r\n"
 
     with open(script_path, "wb") as fp:
-        fp.write(script.encode("utf-8"))
+        fp.write(script.encode("utf-8-sig"))
 
     return script_path, outfile, _find_makensis(nsis)
 
 
 def build_nsis(app, icon, entry="", outdir="dist", nsis=DEFAULT_NSIS,
                app_name="", publisher="", version="", msi=False,
-               language="SimpChinese"):
+               language="SimpChinese", website=DEFAULT_WEBSITE):
     update_manifest(app, entry=entry)
     script_path, outfile, makensis = gen_nsis_script(
         app, icon, entry=entry, outdir=outdir, nsis=nsis,
         app_name=app_name, publisher=publisher, version=version,
-        msi=msi, language=language)
+        msi=msi, language=language, website=website)
     cmd = [makensis, "/V2", script_path]
     print(" ".join(cmd))
     subprocess.check_call(cmd)
