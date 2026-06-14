@@ -59,6 +59,14 @@ def _app_version(app_dir, fallback="1.0.0"):
     return fallback
 
 
+def _dir_size_kb(path):
+    total = 0
+    for root, dirs, names in os.walk(path):
+        for name in names:
+            total += os.path.getsize(os.path.join(root, name))
+    return max(1, total // 1024)
+
+
 def gen_nsis_script(app, icon, entry="", outdir="dist", nsis=DEFAULT_NSIS,
                     app_name="", publisher="", version="", msi=False,
                     language="SimpChinese"):
@@ -76,6 +84,7 @@ def gen_nsis_script(app, icon, entry="", outdir="dist", nsis=DEFAULT_NSIS,
     app_name = app_name or os.path.basename(os.path.normpath(app))
     publisher = publisher or app_name
     version = version or _app_version(app_dir)
+    estimated_size = _dir_size_kb(app_dir)
     outdir = os.path.abspath(outdir)
     if not os.path.isdir(outdir):
         os.makedirs(outdir)
@@ -139,6 +148,8 @@ Section "安装"
   WriteRegStr HKCU "{uninstall_key}" "InstallLocation" "$INSTDIR"
   WriteRegStr HKCU "{uninstall_key}" "DisplayIcon" "$INSTDIR\${{APP_EXE}}"
   WriteRegStr HKCU "{uninstall_key}" "UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
+  WriteRegStr HKCU "{uninstall_key}" "QuietUninstallString" "$\"$INSTDIR\Uninstall.exe$\" /S"
+  WriteRegDWORD HKCU "{uninstall_key}" "EstimatedSize" {estimated_size}
   WriteRegDWORD HKCU "{uninstall_key}" "NoModify" 1
   WriteRegDWORD HKCU "{uninstall_key}" "NoRepair" 1
 
@@ -162,6 +173,7 @@ SectionEnd
         entry_exe=_nsis_quote(entry_exe),
         icon_lines=icon_lines,
         language=_nsis_quote(language),
+        estimated_size=estimated_size,
         outfile=_nsis_quote(outfile),
         app_dir=_nsis_quote(app_dir),
         app_reg_key=_nsis_quote(app_reg_key),
