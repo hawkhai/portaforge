@@ -107,6 +107,16 @@ def parse_args():
     parser.add_argument('--icon', type=str, default='', help='icon file', required=True)
     parser.add_argument('--mcp', type=bool, default=False, help='mcp code')
     parser.add_argument('--entry', type=str, default='', help='entry exe name (without .exe)')
+    parser.add_argument('--installer', type=str, default='nsis',
+                        choices=['nsis', 'embedded', 'msi'],
+                        help='installer backend: nsis creates an NSIS setup exe; embedded creates the legacy single exe')
+    parser.add_argument('--nsis', type=str, default=r'C:\Program Files (x86)\NSIS\NSIS.exe',
+                        help='path to NSIS.exe or makensis.exe')
+    parser.add_argument('--outdir', type=str, default='dist', help='output directory')
+    parser.add_argument('--name', type=str, default='', help='installer application name')
+    parser.add_argument('--publisher', type=str, default='', help='installer publisher')
+    parser.add_argument('--version', type=str, default='', help='installer version')
+    parser.add_argument('--language', type=str, default='SimpChinese', help='NSIS installer language')
     args = parser.parse_args()
     return args
 

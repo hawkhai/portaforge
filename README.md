@@ -4,6 +4,24 @@ Windows 下把散文件目录打包成单个可执行文件的工具。
 
 A tool that packs a directory of loose files into a single self-contained executable on Windows.
 
+## NSIS Installer Mode
+
+`workspace/portaforge.py` now builds an NSIS installer by default:
+
+```bat
+cd D:\kSource\pythonx\portaforge\workspace
+python3 portaforge.py --app WordTap --icon favicon.ico
+```
+
+The installer is written to `workspace\dist\<AppName>-Setup.exe`. To use the
+old single executable resource packer, pass `--installer embedded`.
+
+NSIS builds installer `.exe` files, not real MSI databases. If a true `.msi`
+is required, add a separate WiX/MSI backend instead of renaming an NSIS output.
+
+NSIS UI text uses Simplified Chinese by default. Each NSIS build refreshes
+`workspace\backup\<AppName>.json` and `workspace\backup\<AppName>.rc`.
+
 ## 基本原理 / How It Works
 
 launcher 是一个启动器，把散文件压缩后附加到 launcher.exe 文件尾部；运行时自动解压并转调用目标程序。
